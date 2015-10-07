@@ -1,18 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using heat;
+using Heat;
 
 namespace UnitTestProject1
 {
 
-    class TestListener: Listener
+    class TestListener: Trainee
     {
+        private List<String> calls;
+
+        public TestListener()
+        {
+            this.calls = new List<String>();
+        }
+
+        public override void GoFor(string move)
+        {
+            calls.Add(move);
+        }
+
+        public override void Relax()
+        {
+            calls.Add("rest");
+        }
 
         public string[] CallSequence()
         {
-            return new string[] { "burpees", "rest", "push-ups" };
+            return calls.ToArray();
         }
     }
+
 
     [TestClass]
     public class TestCoach
@@ -21,12 +39,13 @@ namespace UnitTestProject1
         public void TestCoachRunCircuit()
         {
             Circuit circuit = new Circuit(new String[] { "burpees", "push-ups" });
+            Level level = new Level(2); 
 
-            TestListener listener = new TestListener();
-            Coach coach = new Coach(); 
-            coach.Run(circuit, listener);
+            TestListener trainee = new TestListener();
+            Session coach = new Session(circuit, level); 
+            coach.Run(trainee);
 
-            CollectionAssert.AreEqual(listener.CallSequence(), new String[] { "burpees", "rest", "push-ups" });
+            CollectionAssert.AreEqual(trainee.CallSequence(), new String[] { "burpees", "rest", "push-ups", "rest", "burpees", "rest", "push-ups" });
         }
     }
 }

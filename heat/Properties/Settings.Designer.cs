@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace heat.Properties
+namespace Heat.Properties
 {
 
 
