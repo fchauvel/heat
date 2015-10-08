@@ -23,7 +23,7 @@ namespace Heat
 
     }
 
-    public class Circuit: IEnumerable<String> {
+    public class Circuit {
 
         private string[] moves;
 
@@ -32,23 +32,11 @@ namespace Heat
             this.moves = moves;
         }
 
-        public IEnumerator<string> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
         public string[] GetMoves()
         {
             return this.moves;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            foreach(string move in moves)
-            {
-                yield return move;
-            }
-        }
     }
 
     public class Session
@@ -62,32 +50,26 @@ namespace Heat
             this.level = level; 
         }
 
-        public void Run(Trainee listener)
+        public void Run(Trainee trainee)
         { 
             Cursor<int> rounds = new Cursor<int>(level.rounds());
             while (rounds.HasNext())
             {
-                GoThroughCircuit(listener);
+                GoThroughCircuit(trainee);
                 rounds.Next();
-                if (rounds.HasNext())
-                {
-                    listener.Relax();
-                }
+                if (rounds.HasNext()) { trainee.Break(); }
             }
         }
-
- 
+         
         private void GoThroughCircuit(Trainee trainee)
         {
             Cursor<string> move = new Cursor<string>(circuit.GetMoves());
             while (move.HasNext())
             {
-                trainee.GoFor(circuit.GetMoves()[move.GetCurrent()]);
+                String currentMove = circuit.GetMoves()[move.GetCurrent()];
+                trainee.GoFor(currentMove);
                 move.Next();
-                if (move.HasNext())
-                {
-                    trainee.Relax();
-                }
+                if (move.HasNext()) { trainee.SwitchTo(); }
             }
         }
     }
@@ -96,7 +78,9 @@ namespace Heat
     {
         public virtual void GoFor(String move) { }
 
-        public virtual void Relax() { }
+        public virtual void Break() { }
+        
+        public virtual void SwitchTo() { }
 
     }
 }
