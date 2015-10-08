@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Heat
 {
@@ -35,7 +36,13 @@ namespace Heat
 
         public void ShowText(String text)
         {
-            this.text.Text = text;
+            this.action.Dispatcher.BeginInvoke((Action)(()=> this.action.Text = text));  
+        }
+
+        public void ShowTime(int time)
+        {
+            string text = String.Format("{0} s.", time);
+            this.clock.Dispatcher.BeginInvoke((Action)(() => this.clock.Text = text));
         }
     }
 }
