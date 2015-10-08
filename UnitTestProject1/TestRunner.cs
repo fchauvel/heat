@@ -6,11 +6,14 @@ using Heat;
 namespace UnitTestProject1
 {
 
-    class TestListener: Trainee
+    class TestTrainee: Trainee
     {
+        public static readonly String REST = "rest";
+        public static readonly String NEXT_ROUND = "break";
+
         private List<String> calls;
 
-        public TestListener()
+        public TestTrainee()
         {
             this.calls = new List<String>();
         }
@@ -20,9 +23,14 @@ namespace UnitTestProject1
             calls.Add(move);
         }
 
-        public override void Relax()
+        public override void Break()
         {
-            calls.Add("rest");
+            calls.Add(NEXT_ROUND);
+        }
+
+        public override void SwitchTo()
+        {
+            calls.Add(REST);
         }
 
         public string[] CallSequence()
@@ -39,13 +47,15 @@ namespace UnitTestProject1
         public void TestCoachRunCircuit()
         {
             Circuit circuit = new Circuit(new String[] { "burpees", "push-ups" });
-            Level level = new Level(2); 
+            
+            TestTrainee trainee = new TestTrainee();
+            Session session = new Session(circuit, new Level(2)); 
+            session.Run(trainee);
 
-            TestListener trainee = new TestListener();
-            Session coach = new Session(circuit, level); 
-            coach.Run(trainee);
-
-            CollectionAssert.AreEqual(trainee.CallSequence(), new String[] { "burpees", "rest", "push-ups", "rest", "burpees", "rest", "push-ups" });
+            CollectionAssert.AreEqual(trainee.CallSequence(), new String[] {
+                "burpees", TestTrainee.REST,"push-ups",
+                TestTrainee.NEXT_ROUND,
+                "burpees", TestTrainee.REST, "push-ups" });
         }
     }
 }

@@ -20,9 +20,22 @@ namespace Heat
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly App controller;
+
+        public MainWindow(App controller)
         {
+            this.controller = controller;
             InitializeComponent();
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            controller.OnGo();  
+        }
+
+        public void ShowText(String text)
+        {
+            this.text.Text = text;
         }
     }
 }

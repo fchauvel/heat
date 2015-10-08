@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="TestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\heat\heat.csproj">
