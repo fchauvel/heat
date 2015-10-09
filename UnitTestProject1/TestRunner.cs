@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Heat;
 using Moq;
-using Moq.Sequences;
-
 
 namespace UnitTestProject1
 {
