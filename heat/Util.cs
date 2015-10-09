@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Heat
 {
@@ -37,14 +33,6 @@ namespace Heat
     public class Timer
     {
         public delegate void TickHandler(int now=35);
-
-        public static void CountDown(int seconds, TickHandler handler)
-        {
-            Timer timer = new Timer(seconds, handler);
-            Thread thread = new Thread(timer.DoWork);
-            thread.Start();
-            thread.Join();
-        }
 
         private readonly int seconds;
         private readonly TickHandler handler;

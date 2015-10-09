@@ -3,44 +3,11 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Heat;
 using Moq;
+using Moq.Sequences;
 
 
 namespace UnitTestProject1
 {
-
-    class TestTrainee: Trainee
-    {
-        public static readonly String REST = "rest";
-        public static readonly String NEXT_ROUND = "break";
-
-        private List<String> calls;
-
-        public TestTrainee()
-        {
-            this.calls = new List<String>();
-        }
-
-        public override void Excercise(string move)
-        {
-            calls.Add(move);
-        }
-
-        public override void Break()
-        {
-            calls.Add(NEXT_ROUND);
-        }
-
-        public override void SwitchTo()
-        {
-            calls.Add(REST);
-        }
-
-        public string[] CallSequence()
-        {
-            return calls.ToArray();
-        }
-    }
-
 
     [TestClass]
     public class TestCoach
@@ -50,14 +17,37 @@ namespace UnitTestProject1
         {
             Circuit circuit = PrepareCircuit();
 
-            TestTrainee trainee = new TestTrainee();
+            var mockTrainee = new FakeTrainee();
             Session session = new Session(circuit, new Level(2));
-            session.Run(trainee);
 
-            CollectionAssert.AreEqual(trainee.CallSequence(), new String[] {
-                "burpees", TestTrainee.REST,"push-ups",
-                TestTrainee.NEXT_ROUND,
-                "burpees", TestTrainee.REST, "push-ups" });
+            session.Run(mockTrainee);
+
+            mockTrainee.VerifyCalls(new string[] { "burpees", "Switch", "push-ups", "Break", "burpees", "Switch", "push-ups" });
+        }
+
+        private class FakeTrainee : Trainee
+        {
+            private readonly List<string> calls = new List<String>();
+
+            public void Break()
+            {
+                calls.Add("Break");
+            }
+
+            public void Excercise(string move)
+            {
+                calls.Add(move);
+            }
+
+            public void SwitchTo()
+            {
+                calls.Add("Switch");
+            }
+
+            public void VerifyCalls(params string[] expectedCalls)
+            {
+                CollectionAssert.AreEqual(calls, expectedCalls);
+            }
         }
 
         private static Circuit PrepareCircuit()
@@ -66,7 +56,7 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        public void TestRunningCircuit()
+        public void TestBreak()
         {
             const int BREAK_DURATION = 5;
 
@@ -77,6 +67,37 @@ namespace UnitTestProject1
 
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals("BREAK"))), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(BREAK_DURATION));            
+        }
+
+        [TestMethod]
+        public void TestExercise()
+        {
+            const string BURPEES = "burpees";
+            const int DURATION = 5;
+
+            var uiMock = new Mock<UserInterface>();
+            var level = new Level(2, exerciseTime: DURATION);
+            var trainee = new TraineeAdapter(uiMock.Object, level);
+            trainee.Excercise(BURPEES);
+
+            uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(BURPEES))), Times.Once());
+            uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
+        }
+
+
+        [TestMethod]
+        public void TestSwitch()
+        {
+            const string TEXT = "SWITCH";
+            const int DURATION = 5;
+
+            var uiMock = new Mock<UserInterface>();
+            var level = new Level(2, switchTime: DURATION);
+            var trainee = new TraineeAdapter(uiMock.Object, level);
+            trainee.SwitchTo();
+
+            uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(TEXT))), Times.Once());
+            uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
         }
     }
 

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Heat
 {
@@ -47,7 +44,7 @@ namespace Heat
 
         }
 
-        public override void Break()
+        public void Break()
         {
             presenter.ShowAction("BREAK");
             level.TimeBreak(tickHandler);
@@ -59,13 +56,13 @@ namespace Heat
             presenter.ShowTime(now);
         }
 
-        public override void Excercise(string move)
+        public void Excercise(string move)
         {
             presenter.ShowAction(move);
             level.TimeExercise(tickHandler);
         }
 
-        public override void SwitchTo()
+        public void SwitchTo()
         {
             presenter.ShowAction("SWITCH");
             level.TimeSwitch(tickHandler);
@@ -85,7 +82,7 @@ namespace Heat
     public class Level {
 
         private readonly int roundCount;
-        private int breakDuration;
+        private readonly int breakDuration;
         private readonly int switchDuration;
         private readonly int exerciseDuration;
 
@@ -176,13 +173,13 @@ namespace Heat
         }
     }
 
-    public class Trainee
+    public interface Trainee
     {
-        public virtual void Excercise(String move) { }
+        void Excercise(String move);
 
-        public virtual void Break() { }
-        
-        public virtual void SwitchTo() { }
+        void Break();
+
+        void SwitchTo();
 
     }
 }
