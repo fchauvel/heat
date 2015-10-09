@@ -19,22 +19,22 @@ namespace Heat
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, UserInterface
     {
-        private readonly App controller;
+        private readonly Engine engine;
 
-        public MainWindow(App controller)
+        public MainWindow(Engine engine)
         {
-            this.controller = controller;
+            this.engine = engine;
             InitializeComponent();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            controller.OnGo();  
+            engine.OnGo(this);  
         }
 
-        public void ShowText(String text)
+        public void ShowAction(String text)
         {
             this.action.Dispatcher.BeginInvoke((Action)(()=> this.action.Text = text));  
         }

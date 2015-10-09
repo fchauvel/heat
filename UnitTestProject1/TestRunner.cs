@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Heat;
+using Moq;
+
 
 namespace UnitTestProject1
 {
@@ -18,7 +20,7 @@ namespace UnitTestProject1
             this.calls = new List<String>();
         }
 
-        public override void GoFor(string move)
+        public override void Excercise(string move)
         {
             calls.Add(move);
         }
@@ -46,10 +48,10 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestCoachRunCircuit()
         {
-            Circuit circuit = new Circuit(new String[] { "burpees", "push-ups" });
-            
+            Circuit circuit = PrepareCircuit();
+
             TestTrainee trainee = new TestTrainee();
-            Session session = new Session(circuit, new Level(2)); 
+            Session session = new Session(circuit, new Level(2));
             session.Run(trainee);
 
             CollectionAssert.AreEqual(trainee.CallSequence(), new String[] {
@@ -57,5 +59,26 @@ namespace UnitTestProject1
                 TestTrainee.NEXT_ROUND,
                 "burpees", TestTrainee.REST, "push-ups" });
         }
+
+        private static Circuit PrepareCircuit()
+        {
+            return new Circuit(new String[] { "burpees", "push-ups" });
+        }
+
+        [TestMethod]
+        public void TestRunningCircuit()
+        {
+            const int BREAK_DURATION = 5;
+
+            var uiMock = new Mock<UserInterface>();
+            var level = new Level(2, breakTime: BREAK_DURATION);
+            var trainee = new TraineeAdapter(uiMock.Object, level);
+            trainee.Break();
+
+            uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals("BREAK"))), Times.Once());
+            uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(BREAK_DURATION));            
+        }
     }
+
+
 }
