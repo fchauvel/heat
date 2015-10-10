@@ -83,6 +83,51 @@ namespace Heat
 
     public class Level {
 
+
+        public static Level match(int exerciseCount, int totalDuration, double effort)
+        {
+            var bestFit = new Level(roundCount: 1, exerciseTime: 5, switchTime: 0, breakTime: 5);
+            var smallestError = error(bestFit, exerciseCount, totalDuration, effort);
+
+            for (int eachRoundCount = 1; eachRoundCount < 10; eachRoundCount++)
+            {
+                for (int eachExerciseTime = 15; eachExerciseTime < 90; eachExerciseTime += 1)
+                {
+                    for (int eachBreakTime = 6; eachBreakTime < 30; eachBreakTime += 1)
+                    {
+                        var candidate = new Level(eachRoundCount, eachBreakTime, 0, eachExerciseTime);
+                        var candidateError = error(candidate, exerciseCount, totalDuration, effort);
+                        if (smallestError > candidateError) {
+                            bestFit = candidate;
+                            smallestError = candidateError;
+                        }
+                    }
+                }
+            }
+
+            return bestFit;
+        }
+
+        public static double error(Level level, int exerciseCount, int desiredDuration, double desiredEffort)
+        {
+            double error = Math.Pow(scaleEffort(desiredEffort) - scaleEffort(level.Effort(exerciseCount)), 2);
+            error += Math.Pow(scaleDuration(desiredDuration) - scaleDuration(level.TotalDuration(exerciseCount)), 2);
+            return error;
+        }
+
+        private static double scaleDuration(int duration)
+        {
+            return ((double)duration) / MAXIMUM_DURATION;
+        }
+
+        private static double scaleEffort(double effort)
+        {
+            return effort * 100D;
+        }
+
+        private static readonly double MAXIMUM_DURATION = 90 * 60;
+
+
         private readonly int roundCount;
         private readonly int breakDuration;
         private readonly int switchDuration;
@@ -94,6 +139,19 @@ namespace Heat
             this.breakDuration = breakTime;
             this.switchDuration = switchTime;
             this.exerciseDuration = exerciseTime;
+        }
+
+        public int TotalDuration(int moveCount)
+        {
+            return roundCount * ((exerciseDuration * moveCount) + (switchDuration * (moveCount - 1)))
+                + (breakDuration * (roundCount - 1));
+        }
+
+        public double Effort(int moveCount)
+        {
+            double exerciseTime = roundCount * exerciseDuration * moveCount;
+            int totalDuration = TotalDuration(moveCount); 
+            return totalDuration == 0 ? 0D : 100D * exerciseTime / totalDuration;
         }
 
         public ICollection<int> rounds()

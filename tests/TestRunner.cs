@@ -97,6 +97,56 @@ namespace Sandbox
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(TEXT))), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
         }
+
+        [TestMethod]
+        public void TestTotalTime()
+        {
+            var level = new Level(1, breakTime: 0, switchTime: 0, exerciseTime: 30 );
+            Assert.AreEqual(level.TotalDuration(8), 240);
+        }
+
+        [TestMethod]
+        public void TestTotalTimeWithoutWorking()
+        {
+            var level = new Level(1, breakTime: 10, switchTime: 0, exerciseTime: 0);
+            Assert.AreEqual(level.TotalDuration(8), 0);
+        }
+
+        [TestMethod]
+        public void TestFullEffort()
+        {
+            var level = new Level(1, breakTime: 0, switchTime: 0, exerciseTime: 30);
+            Assert.AreEqual(level.Effort(8), 100.00, 1e-6);
+        }
+
+        [TestMethod]
+        public void TestMediumEffort()
+        {
+            var level = new Level(2, breakTime: 20, switchTime: 0, exerciseTime: 10);
+            Assert.AreEqual(level.Effort(1), 50.00, 1e-3);
+        }
+
+
+        [TestMethod]
+        public void TestNoEffort()
+        {
+            var level = new Level(1, breakTime: 10, switchTime: 0, exerciseTime: 0);
+            Assert.AreEqual(level.Effort(8), 0.00, 1e-3);
+        }
+
+        [TestMethod]
+        public void TestLevelOptimization()
+        {
+            const int expectedDuration = 30 * 60; // 30 minutes
+            const double effort = 95D;
+            const int exerciseCount = 8;
+
+            var level = Level.match(exerciseCount, expectedDuration, effort);
+
+            Assert.AreEqual(95D, level.Effort(exerciseCount), 1e-1);
+            Assert.IsTrue((30 * 60 - level.TotalDuration(exerciseCount)) / (30 * 60) < 0.1);
+        }
+
     }
 
 

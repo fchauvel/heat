@@ -23,5 +23,7 @@ namespace Sandbox
             var expected = new string[] { "Pushups", "Burpees", "Standing Crunches" }; 
             CollectionAssert.AreEqual(circuit.GetMoves(), expected, circuit.GetMoves().ToString());
         }
+
+
     }
 }
