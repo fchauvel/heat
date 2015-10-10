@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "heat", "heat\heat.csproj", "{E155E4DB-02DD-4874-AE84-6C020FBBA439}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "UnitTestProject1\Tests.csproj", "{05584814-8BD5-4C23-B6A2-9C73C712681D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{05584814-8BD5-4C23-B6A2-9C73C712681D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74CB44BE-BD3C-4270-B1AE-494AD75F8DA4}"
 	ProjectSection(SolutionItems) = preProject

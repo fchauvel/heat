@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Heat;
 using Moq;
 
-namespace UnitTestProject1
+namespace Sandbox
 {
 
     [TestClass]

@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Heat;
 
-namespace UnitTestProject1
+namespace Sandbox
 {
 
 

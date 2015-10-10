@@ -1,18 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
+using System.Speech.Synthesis;
 
 namespace Heat
 {
@@ -22,10 +10,14 @@ namespace Heat
     public partial class MainWindow : Window, UserInterface
     {
         private readonly Engine engine;
+        private readonly SpeechSynthesizer synthesizer;
+
 
         public MainWindow(Engine engine)
         {
             this.engine = engine;
+            this.synthesizer = new SpeechSynthesizer();
+
             InitializeComponent();
         }
 
@@ -36,7 +28,16 @@ namespace Heat
 
         public void ShowAction(String text)
         {
-            this.action.Dispatcher.BeginInvoke((Action)(()=> this.action.Text = text));  
+            this.action.Dispatcher.BeginInvoke(
+               (Action)(() =>
+                    {
+                        this.action.Text = text;
+                        PromptBuilder pb = new PromptBuilder();
+                        pb.AppendText("Now, " + text + "!");
+                        synthesizer.Speak(pb);
+                    }
+            ));
+           
         }
 
         public void ShowTime(int time)
