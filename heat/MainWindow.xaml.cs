@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Speech.Synthesis;
+using System.IO;
 
 namespace Heat
 {
@@ -44,6 +45,16 @@ namespace Heat
         {
             string text = String.Format("{0} s.", time);
             this.clock.Dispatcher.BeginInvoke((Action)(() => this.clock.Text = text));
+        }
+
+        private void LoadWorkout_Click(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new System.Windows.Forms.OpenFileDialog();
+            var result = fileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK) { 
+                Circuit circuit = Circuit.fromYAML(new StreamReader(fileDialog.FileName));
+                engine.LoadCircuit(circuit);
+            }
         }
     }
 }

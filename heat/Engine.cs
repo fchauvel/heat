@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using YamlDotNet.RepresentationModel;
 
 namespace Heat
 {
@@ -124,6 +126,22 @@ namespace Heat
 
     public class Circuit {
 
+        public static Circuit fromYAML(TextReader input)
+        {
+            var yaml = new YamlStream();
+            yaml.Load(input);
+            var mapping = (YamlMappingNode) yaml.Documents[0].RootNode;
+
+            var exercises = new List<string>();
+            var sequences = (YamlSequenceNode)mapping.Children[new YamlScalarNode("workout")];
+            foreach (var eachExercise in sequences)
+            {
+                 exercises.Add(((YamlScalarNode)eachExercise).Value);
+            }
+
+            return new Circuit(exercises.ToArray());
+        }
+
         private string[] moves;
 
         public Circuit(string[] moves)
@@ -134,6 +152,13 @@ namespace Heat
         public string[] GetMoves()
         {
             return this.moves;
+        }
+
+        public String ToString()
+        {
+            string text = "";
+            foreach (var move in moves) { text += move + " "; }
+            return text;
         }
 
     }
