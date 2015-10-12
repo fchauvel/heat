@@ -5,20 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Heat"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="17*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="251*"/>
-            <ColumnDefinition Width="268*"/>
-        </Grid.ColumnDefinitions>
-        <Button x:Name="go_button" Content="Go!" Height="37" Margin="131.6,11.4,43.4,0" VerticalAlignment="Top" Width="93" Click="button_Click" Grid.Column="1" Grid.Row="1">
-        </Button>
-        <TextBlock x:Name="action" HorizontalAlignment="Left" Margin="33,51.4,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="120" Width="302" FontSize="48" Grid.Row="1" TextAlignment="Center" FontWeight="Bold"/>
-        <TextBlock x:Name="clock" HorizontalAlignment="Left" Margin="115,178.4,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" FontSize="32" Width="145" Grid.ColumnSpan="2" TextAlignment="Center"/>
-        <Button x:Name="LoadWorkout" Content="Load" Grid.Column="1" HorizontalAlignment="Left" Margin="129.6,221.4,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Height="35" Click="LoadWorkout_Click"/>
-    </Grid>
+        Title="MainWindow" Height="350" Width="563.2">
+    <DockPanel>
+        <Frame x:Name="frame"/>
+    </DockPanel>
+
 </Window>

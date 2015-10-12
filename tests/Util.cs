@@ -1,30 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 
 namespace Heat
 {
-    class Duration
-    {
-        private static readonly int MAXIMUM;
-        private readonly int duration;
-
-        public Duration(int durationInSeconds)
-        {
-            if (duration < 0) {
-                var error = String.Format("Duration must be positive (found {0})", durationInSeconds);
-                throw new ArgumentException(error);
-            }
-            this.duration = durationInSeconds;
-        }
-
-        public double normalize()
-        {
-            return ((double)duration) / MAXIMUM;
-        }
-
-    }
-
     class Cursor<T>
     {
         private ICollection<T> source;
