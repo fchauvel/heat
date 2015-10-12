@@ -212,7 +212,7 @@ namespace Heat
             return this.moves;
         }
 
-        public String ToString()
+        public override String ToString()
         {
             string text = "";
             foreach (var move in moves) { text += move + " "; }

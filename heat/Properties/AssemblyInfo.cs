@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("heat")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("EVRY")]
+[assembly: AssemblyCompany("Franck Chauvel")]
 [assembly: AssemblyProduct("heat")]
-[assembly: AssemblyCopyright("Copyright © EVRY 2015")]
+[assembly: AssemblyCopyright("Copyright © Franck Chauvel 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
