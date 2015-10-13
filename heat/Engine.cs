@@ -20,7 +20,7 @@ namespace Heat
         public Engine()
         {
             this.listener = null;
-            this.circuit = new Circuit(new string[] { "Burpees", "Push-ups" });
+            this.circuit = Circuit.SimpleWorkout("Burpees", "Push-ups", "Squats");
             this.level = new Level(2);
             this.duration = new Duration();
             this.effort = new Effort();
@@ -84,7 +84,7 @@ namespace Heat
 
         protected virtual void UpdateLevel()
         {
-            level = Level.match(circuit.GetMoves().Length, duration, effort);
+            level = Level.match(circuit.Workout.Count, duration, effort);
             listener.LevelChangedTo(level.RoundCount(), level.BreakTime());
         }
 
@@ -122,9 +122,9 @@ namespace Heat
             this.level = level;
         }
 
-        public void Break()
+        public void Break(string kind)
         {
-            listener.ShowAction("BREAK");
+            listener.ShowAction(kind);
             level.TimeBreak(tickHandler);
         }
 
@@ -143,6 +143,11 @@ namespace Heat
         {
             listener.ShowAction("SWITCH");
             level.TimeSwitch(tickHandler);
+        }
+
+        public void CircuitCompleted()
+        {
+
         }
     }
 
@@ -267,38 +272,101 @@ namespace Heat
     public class Circuit
     {
 
+
         public static Circuit fromYAML(TextReader input)
+        {
+            var document = readYAML(input);
+            var name = fetchName(document);
+            var warmup = fetchList(document, "warmup");
+            var workout = fetchList(document, "workout");
+            var stretching = fetchList(document, "stretching");
+            return new Circuit(name, warmup, workout, stretching);
+        }
+
+        private static string fetchName(YamlMappingNode document)
+        {
+            try {
+                var nameNode = (YamlScalarNode)document.Children[new YamlScalarNode("name")];
+                var name = nameNode.Value;
+                return name;
+            } catch (KeyNotFoundException)
+            {
+                return DEFAULT_NAME;
+            }
+        }
+
+        private static YamlMappingNode readYAML(TextReader input)
         {
             var yaml = new YamlStream();
             yaml.Load(input);
-            var mapping = (YamlMappingNode)yaml.Documents[0].RootNode;
+            return (YamlMappingNode)yaml.Documents[0].RootNode;
+        }
 
-            var exercises = new List<string>();
-            var sequences = (YamlSequenceNode)mapping.Children[new YamlScalarNode("workout")];
-            foreach (var eachExercise in sequences)
+        private static List<string> fetchList(YamlMappingNode container, string listName)
+        {
+            var results = new List<string>();
+            try {
+                var sequences = (YamlSequenceNode)container.Children[new YamlScalarNode(listName)];
+                foreach (var eachExercise in sequences)
+                {
+                    results.Add(((YamlScalarNode)eachExercise).Value);
+                }
+
+            } catch (KeyNotFoundException)
             {
-                exercises.Add(((YamlScalarNode)eachExercise).Value);
             }
-
-            return new Circuit(exercises.ToArray());
+            return results;
         }
 
-        private string[] moves;
-
-        public Circuit(string[] moves)
+        public static Circuit SimpleWorkout(params string[] exercises)
         {
-            this.moves = moves;
+            return NamedWorkout(DEFAULT_NAME, new List<string>(exercises));
         }
 
-        public string[] GetMoves()
+        public static Circuit NamedWorkout(string name, List<string> exercises)
         {
-            return this.moves;
+            return new Circuit(name, new List<string>(), exercises, new List<string>());
+        }
+
+        private const string DEFAULT_NAME = "No Name";
+      
+        private readonly string name;
+        private readonly List<string> warmup;
+        private readonly List<string> workout;
+        private readonly List<string> stretching;
+
+        public Circuit(string name, List<string> warmup, List<string> workout, List<string> stretching)
+        {
+            this.name = name;
+            this.warmup = new List<string>(warmup);
+            this.workout = new List<string>(workout);
+            this.stretching = new List<string>(stretching);
+        }
+
+        public string Name
+        {
+            get { return name; }
+        }
+
+        public List<String> Warmup
+        {
+            get { return warmup; }
+        }
+
+        public List<string> Workout
+        {
+            get { return workout; }
+        }
+
+        public List<string> Stretching
+        {
+            get { return stretching; }
         }
 
         public override String ToString()
         {
             string text = "";
-            foreach (var move in moves) { text += move + " "; }
+            foreach (var move in workout) { text += move + " "; }
             return text;
         }
 
@@ -317,21 +385,43 @@ namespace Heat
 
         public void Run(Trainee trainee)
         {
+            Warmup(trainee);
+            Workout(trainee);
+            Stretching(trainee);
+        }
+
+        private void Warmup(Trainee trainee)
+        {
+            trainee.Break("warmup");
+            GoThrough(trainee, circuit.Warmup);
+        }
+
+        private void Workout(Trainee trainee)
+        {
+            trainee.Break("workout");
             Cursor<int> rounds = new Cursor<int>(level.rounds());
             while (rounds.HasNext())
             {
-                GoThroughCircuit(trainee);
+                GoThrough(trainee, circuit.Workout);
                 rounds.Next();
-                if (rounds.HasNext()) { trainee.Break(); }
+                if (rounds.HasNext()) { trainee.Break("break"); }
             }
         }
 
-        private void GoThroughCircuit(Trainee trainee)
+        private void Stretching(Trainee trainee)
         {
-            Cursor<string> move = new Cursor<string>(circuit.GetMoves());
+            trainee.Break("stretching");
+            GoThrough(trainee, circuit.Stretching);
+            trainee.CircuitCompleted();
+        }
+
+        // TODO Should be the responsibility of the trainee
+        private void GoThrough(Trainee trainee, List<String> exercises)
+        {
+            Cursor<string> move = new Cursor<string>(exercises);
             while (move.HasNext())
             {
-                String currentMove = circuit.GetMoves()[move.GetCurrent()];
+                String currentMove = exercises[move.GetCurrent()];
                 trainee.Excercise(currentMove);
                 move.Next();
                 if (move.HasNext()) { trainee.SwitchTo(); }
@@ -343,9 +433,11 @@ namespace Heat
     {
         void Excercise(String move);
 
-        void Break();
+        void Break(string kind);
 
         void SwitchTo();
+
+        void CircuitCompleted();
 
     }
 }

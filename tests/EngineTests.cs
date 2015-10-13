@@ -81,48 +81,6 @@ namespace Tests
     [TestClass]
     public class TestCoach
     {
-        [TestMethod]
-        public void TestCoachRunCircuit()
-        {
-            Circuit circuit = PrepareCircuit();
-
-            var mockTrainee = new FakeTrainee();
-            Session session = new Session(circuit, new Level(2));
-
-            session.Run(mockTrainee);
-
-            mockTrainee.VerifyCalls(new string[] { "burpees", "Switch", "push-ups", "Break", "burpees", "Switch", "push-ups" });
-        }
-
-        private class FakeTrainee : Trainee
-        {
-            private readonly List<string> calls = new List<String>();
-
-            public void Break()
-            {
-                calls.Add("Break");
-            }
-
-            public void Excercise(string move)
-            {
-                calls.Add(move);
-            }
-
-            public void SwitchTo()
-            {
-                calls.Add("Switch");
-            }
-
-            public void VerifyCalls(params string[] expectedCalls)
-            {
-                CollectionAssert.AreEqual(calls, expectedCalls);
-            }
-        }
-
-        private static Circuit PrepareCircuit()
-        {
-            return new Circuit(new String[] { "burpees", "push-ups" });
-        }
 
         [TestMethod]
         public void TestBreak()
@@ -132,7 +90,7 @@ namespace Tests
             var uiMock = new Mock<Listener>();
             var level = new Level(2, breakTime: BREAK_DURATION);
             var trainee = new TraineeAdapter(uiMock.Object, level);
-            trainee.Break();
+            trainee.Break("BREAK");
 
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals("BREAK"))), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(BREAK_DURATION));            
