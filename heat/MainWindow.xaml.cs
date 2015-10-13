@@ -9,24 +9,16 @@ namespace Heat
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, UserInterface
+    public partial class MainWindow : Window, Listener
     {
-        private const int DEFAULT_EFFORT = 85;
-        private const int EFFORT_STEP = 5;
-
         private readonly Engine engine;
-
         private readonly SpeechSynthesizer synthesizer;
-
-        private decimal effortValue;
 
         public MainWindow(Engine engine)
         {
             this.engine = engine;
             this.synthesizer = new SpeechSynthesizer();
             InitializeComponent();
-            effortValue = DEFAULT_EFFORT;
-            update();
         }
 
         public void ShowAction(String text)
@@ -48,12 +40,7 @@ namespace Heat
             this.clock.Dispatcher.BeginInvoke((Action)(() => this.clock.Text = text));
         }
 
-        private void Longer_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            engine.Extend();
-        }
-
-        public void ShowDuration(int durationInMinutes)
+        public void DurationChangedTo(int durationInMinutes)
         {
             duration.Dispatcher.BeginInvoke((Action)(() => {
                 var newDuration = string.Format("{0} min.", durationInMinutes);
@@ -61,10 +48,17 @@ namespace Heat
             }));
         }
 
-        private void update()
+        public void EffortChangedTo(int newEffortValue)
         {
-            var newEffort = string.Format("{0} %", effortValue);
-            effort.Text = newEffort;
+            effort.Dispatcher.BeginInvoke((Action)(() => {
+                var newEffortText = string.Format("{0} %", newEffortValue);
+                effort.Text = newEffortText;
+            }));
+        }
+
+        private void Longer_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            engine.Extend();
         }
 
         private void Shorter_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -74,17 +68,12 @@ namespace Heat
 
         private void Harder_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            effortValue += EFFORT_STEP;
-            update();
+            engine.AugmentEffort();
         }
 
         private void Easier_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            // To be removed
-            effortValue -= EFFORT_STEP;
-            update();
-
-            engine.reduceEffort();
+            engine.ReduceEffort();
         }
 
         private void ChangeWorkout_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -100,7 +89,7 @@ namespace Heat
 
         private void Go_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            engine.OnGo(effortValue);
+            engine.OnGo();
         }
 
     }

@@ -11,27 +11,64 @@ namespace Tests
     public class TestEngine
     {
         [TestMethod]
-        public void ShortenShouldUpdateThePresenter()
+        public void SetListenerShouldUpdateBothDurationAndEffort()
         {
-            var presenter = new Mock<UserInterface>();
+            var listener = new Mock<Listener>();
             var engine = new Engine();
-            engine.SetUserInterface(presenter.Object);
+
+            engine.RegisterListener(listener.Object);
+
+            listener.Verify(m => m.DurationChangedTo(It.Is<int>(duration => duration.Equals(30))), Times.Once());
+            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(Effort.DEFAULT))), Times.Once());
+        }
+         
+        [TestMethod]
+        public void ShortenShouldUpdateTheDuration()
+        {
+            var listener = new Mock<Listener>();
+            var engine = new Engine();
+            engine.RegisterListener(listener.Object);
 
             engine.Shorten();
 
-            presenter.Verify(m => m.ShowDuration(It.Is<int>(value => value.Equals(25))), Times.Once());
+            listener.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(25))), Times.Once());
         }
 
         [TestMethod]
         public void ExtendShouldUpdateTheDuration()
         {
-            var presenter = new Mock<UserInterface>();
+            var presenter = new Mock<Listener>();
             var engine = new Engine();
-            engine.SetUserInterface(presenter.Object);
+            engine.RegisterListener(presenter.Object);
 
             engine.Extend();
 
-            presenter.Verify(m => m.ShowDuration(It.Is<int>(value => value.Equals(35))), Times.Once());
+            presenter.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(35))), Times.Once());
+        }
+
+        [TestMethod]
+        public void EasierShouldTriggerAnUpdateOfTheEffort()
+        {
+            var presenter = new Mock<Listener>();
+            var engine = new Engine();
+            engine.RegisterListener(presenter.Object);
+
+            engine.ReduceEffort();
+
+            presenter.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(73))), Times.Once());
+        }
+
+
+        [TestMethod]
+        public void HarderShouldTriggerAnUpdateOfTheEffort()
+        {
+            var presenter = new Mock<Listener>();
+            var engine = new Engine();
+            engine.RegisterListener(presenter.Object);
+
+            engine.AugmentEffort();
+
+            presenter.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(77))), Times.Once());
         }
     }
 
@@ -86,7 +123,7 @@ namespace Tests
         {
             const int BREAK_DURATION = 5;
 
-            var uiMock = new Mock<UserInterface>();
+            var uiMock = new Mock<Listener>();
             var level = new Level(2, breakTime: BREAK_DURATION);
             var trainee = new TraineeAdapter(uiMock.Object, level);
             trainee.Break();
@@ -101,7 +138,7 @@ namespace Tests
             const string BURPEES = "burpees";
             const int DURATION = 5;
 
-            var uiMock = new Mock<UserInterface>();
+            var uiMock = new Mock<Listener>();
             var level = new Level(2, exerciseTime: DURATION);
             var trainee = new TraineeAdapter(uiMock.Object, level);
             trainee.Excercise(BURPEES);
@@ -117,7 +154,7 @@ namespace Tests
             const string TEXT = "SWITCH";
             const int DURATION = 5;
 
-            var uiMock = new Mock<UserInterface>();
+            var uiMock = new Mock<Listener>();
             var level = new Level(2, switchTime: DURATION);
             var trainee = new TraineeAdapter(uiMock.Object, level);
             trainee.SwitchTo();

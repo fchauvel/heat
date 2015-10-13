@@ -7,7 +7,7 @@ namespace Heat
 
     public class Effort
     {
-        private const int DEFAULT = 75;
+        public const int DEFAULT = 75;
 
         private readonly int effort;
 
@@ -30,7 +30,7 @@ namespace Heat
             return effort == DEFAULT;
         }
 
-        public Effort Increment()
+        public Effort NextIncrement()
         {
             return new Effort(effort + INCREMENT);
         }
@@ -46,6 +46,11 @@ namespace Heat
         {
             return new Effort(effort - INCREMENT);
         }
+
+        public int asPercentage()
+        {
+            return effort;
+        }
     }
 
     public class Duration
@@ -60,11 +65,11 @@ namespace Heat
             return new Duration(durationInMinutes * SECONDS_IN_ONE_MINUTES);
         }
 
-        private const int DEFAULT_VALUE = 30 * SECONDS_IN_ONE_MINUTES;
+        public const int DEFAULT = 30 * SECONDS_IN_ONE_MINUTES;
 
         private readonly int duration;
 
-        public Duration(int durationInSeconds = DEFAULT_VALUE)
+        public Duration(int durationInSeconds = DEFAULT)
         {
             if (durationInSeconds <= 0) {
                 var error = String.Format("Duration must be positive (found {0})", durationInSeconds);
@@ -75,7 +80,7 @@ namespace Heat
 
         public bool IsDefault()
         {
-            return duration == DEFAULT_VALUE;
+            return duration == DEFAULT;
         }
 
         public Duration Increment()

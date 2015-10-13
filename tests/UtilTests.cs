@@ -33,7 +33,7 @@ namespace Heat
         public void ShouldBeIncrementable()
         {
             var effort = new Effort(75);
-            var newEffort = effort.Increment();
+            var newEffort = effort.NextIncrement();
             Assert.IsTrue(newEffort.IsHarderThan(effort));
         }
 
@@ -45,6 +45,13 @@ namespace Heat
             Assert.IsTrue(effort.IsHarderThan(newEffort));
         }
 
+        [TestMethod]
+        public void ShouldBeAvailableAsPercentage()
+        {
+            const int PERCENTAGE = 75;
+            var effort = new Effort(PERCENTAGE);
+            Assert.AreEqual(PERCENTAGE, effort.asPercentage());
+        }
 
     }
 

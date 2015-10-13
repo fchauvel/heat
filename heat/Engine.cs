@@ -10,11 +10,12 @@ namespace Heat
 
     public class Engine
     {
-        private UserInterface ui;
+        private Listener ui;
 
         private Circuit circuit;
         private Level level;
         private Duration duration;
+        private Effort effort;
 
         public Engine()
         {
@@ -22,11 +23,14 @@ namespace Heat
             this.circuit = new Circuit(new string[] { "Burpees", "Push-ups" });
             this.level = new Level(2);
             this.duration = new Duration();
+            this.effort = new Effort();
         }
 
-        public void SetUserInterface(UserInterface ui)
+        public void RegisterListener(Listener ui)
         {
             this.ui = ui;
+            this.ui.DurationChangedTo(duration.inMinutes());
+            this.ui.EffortChangedTo(effort.asPercentage());
         }
 
         public void LoadCircuit(Circuit circuit)
@@ -34,40 +38,47 @@ namespace Heat
             this.circuit = circuit;
         }
 
-        public void OnGo(decimal expectedEffort)
+        public void OnGo()
         {
-            level = Level.match(circuit.GetMoves().Length, duration.inSeconds(), (double)expectedEffort);
+            level = Level.match(circuit.GetMoves().Length, duration.inSeconds(), effort.asPercentage());
             new Thread(() => { 
                 var session = new Session(circuit, level);
                 session.Run(new TraineeAdapter(ui, level));
             }).Start();
         }
 
-        public void reduceEffort()
+        public void AugmentEffort()
         {
+            effort = effort.NextIncrement();
+            ui.EffortChangedTo(effort.asPercentage());
+        }
 
+        public void ReduceEffort()
+        {
+            effort = effort.Decrement();
+            ui.EffortChangedTo(effort.asPercentage());
         }
 
         public void Shorten()
         {
             duration = this.duration.Decrement();
-            ui.ShowDuration(duration.inMinutes());
+            ui.DurationChangedTo(duration.inMinutes());
         }
 
         public void Extend()
         {
             duration = this.duration.Increment();
-            ui.ShowDuration(duration.inMinutes());
+            ui.DurationChangedTo(duration.inMinutes());
         }
 
     }
 
     public class TraineeAdapter : Trainee
     {
-        private readonly UserInterface presenter;
+        private readonly Listener presenter;
         private readonly Level level;
 
-        public TraineeAdapter(UserInterface presenter, Level level)
+        public TraineeAdapter(Listener presenter, Level level)
         {
             this.presenter = presenter;
             this.level = level;
@@ -100,14 +111,16 @@ namespace Heat
     }
 
 
-    public interface UserInterface
+    public interface Listener
     {
 
         void ShowAction(string action);
 
         void ShowTime(int remaining);
 
-        void ShowDuration(int durationInMinutes);
+        void DurationChangedTo(int newDurationInMinutes);
+
+        void EffortChangedTo(int newEffort);
 
     }
 
