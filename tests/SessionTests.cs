@@ -52,22 +52,37 @@ namespace Tests
             calls.Add(signal);
         }
 
-        public void Break(string kind)
+        public override void GetReadyForStretching()
         {
-            Record(kind);
+            Record("stretching");
         }
 
-        public void Excercise(string move)
+        public override void GetReadyForWarmup()
+        {
+            Record("warmup");
+        }
+
+        public override void GetReadyForWorkout()
+        {
+            Record("workout");
+        }
+
+        public override void Break()
+        {
+            Record("break");
+        }
+
+        public override void Excercise(string move)
         {
             Record(move);
         }
 
-        public void SwitchTo()
+        public override void SwitchTo()
         {
             //Record("switch");
         }
 
-        public void CircuitCompleted()
+        public override void CircuitCompleted()
         {
             Record("well done!");
         }

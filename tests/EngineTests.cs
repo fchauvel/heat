@@ -90,7 +90,7 @@ namespace Tests
             var uiMock = new Mock<Listener>();
             var level = new Level(2, breakTime: BREAK_DURATION);
             var trainee = new TraineeAdapter(uiMock.Object, level);
-            trainee.Break("BREAK");
+            trainee.Break();
 
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals("BREAK"))), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(BREAK_DURATION));            
@@ -105,6 +105,7 @@ namespace Tests
             var uiMock = new Mock<Listener>();
             var level = new Level(2, exerciseTime: DURATION);
             var trainee = new TraineeAdapter(uiMock.Object, level);
+
             trainee.Excercise(BURPEES);
 
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(BURPEES))), Times.Once());

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Speech.Synthesis;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Heat
 {
