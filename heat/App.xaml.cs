@@ -14,6 +14,7 @@ namespace Heat
             base.OnStartup(e);
             engine = new Engine(); 
             MainWindow presenter = new MainWindow(engine);
+            engine.SetUserInterface(presenter);
             presenter.Show();
         }
 

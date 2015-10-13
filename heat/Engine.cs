@@ -10,13 +10,23 @@ namespace Heat
 
     public class Engine
     {
+        private UserInterface ui;
+
         private Circuit circuit;
         private Level level;
+        private Duration duration;
 
         public Engine()
         {
+            this.ui = null;
             this.circuit = new Circuit(new string[] { "Burpees", "Push-ups" });
             this.level = new Level(2);
+            this.duration = new Duration();
+        }
+
+        public void SetUserInterface(UserInterface ui)
+        {
+            this.ui = ui;
         }
 
         public void LoadCircuit(Circuit circuit)
@@ -24,12 +34,30 @@ namespace Heat
             this.circuit = circuit;
         }
 
-        public void OnGo(UserInterface ui)
+        public void OnGo(decimal expectedEffort)
         {
+            level = Level.match(circuit.GetMoves().Length, duration.inSeconds(), (double)expectedEffort);
             new Thread(() => { 
                 var session = new Session(circuit, level);
                 session.Run(new TraineeAdapter(ui, level));
             }).Start();
+        }
+
+        public void reduceEffort()
+        {
+
+        }
+
+        public void Shorten()
+        {
+            duration = this.duration.Decrement();
+            ui.ShowDuration(duration.inMinutes());
+        }
+
+        public void Extend()
+        {
+            duration = this.duration.Increment();
+            ui.ShowDuration(duration.inMinutes());
         }
 
     }
@@ -78,6 +106,8 @@ namespace Heat
         void ShowAction(string action);
 
         void ShowTime(int remaining);
+
+        void ShowDuration(int durationInMinutes);
 
     }
 

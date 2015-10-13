@@ -63,13 +63,20 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" Foreground="White" Margin="15,0,0,0">&#x1F4D1;</TextBlock>
                 <TextBlock x:Name="Workout" Text="Sample Workout" FontSize="16" Margin="5,0,10,0" Foreground="White"></TextBlock>
+                <Button x:Name="ChangeWorkout" Click="ChangeWorkout_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <TextBlock FontSize="16" Margin="5,0,0,0" Foreground="White">&#x1f4c2;</TextBlock>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                
             </StackPanel>
         </StackPanel>
 
         <StackPanel x:Name="frame" Orientation="Vertical" HorizontalAlignment="Center" Height="260" Grid.Row="2" Grid.ColumnSpan="2">
-            <Border BorderBrush="{x:Null}" Height="150"  >
-                <TextBlock x:Name="action" FontSize="48" Width="400" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold">READY?</TextBlock>
-            </Border>
+            <TextBlock x:Name="round" FontSize="29.333" TextAlignment="Center">--</TextBlock>
+            <TextBlock x:Name="action" FontSize="48" Width="400" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold">READY?</TextBlock>
             <TextBlock x:Name="clock" FontSize="29.333" TextAlignment="Center">--</TextBlock>
         </StackPanel>
 

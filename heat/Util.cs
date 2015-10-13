@@ -4,24 +4,113 @@ using System.Threading;
 
 namespace Heat
 {
-    class Duration
+
+    public class Effort
     {
-        private static readonly int MAXIMUM;
+        private const int DEFAULT = 75;
+
+        private readonly int effort;
+
+        public Effort(int percentage = DEFAULT)
+        {
+            if (percentage < 0)
+            {
+                string error = string.Format("Effort value must be positive (found {0})", percentage);
+                throw new ArgumentException(error);
+            }
+            if (percentage > 100)
+            {
+                string error = string.Format("Effort must a value within [0, 100] (found {0})", percentage);
+            }
+            effort = percentage;
+        }
+
+        public bool IsDefault()
+        {
+            return effort == DEFAULT;
+        }
+
+        public Effort Increment()
+        {
+            return new Effort(effort + INCREMENT);
+        }
+
+        private const int INCREMENT = 2;
+
+        public bool IsHarderThan(Effort other)
+        {
+            return effort > other.effort;
+        }
+
+        public Effort Decrement()
+        {
+            return new Effort(effort - INCREMENT);
+        }
+    }
+
+    public class Duration
+    {
+        public static Duration fromSeconds(int durationInSeconds)
+        {
+            return new Duration(durationInSeconds);
+        }
+
+        public static Duration fromMinutes(int durationInMinutes)
+        {
+            return new Duration(durationInMinutes * SECONDS_IN_ONE_MINUTES);
+        }
+
+        private const int DEFAULT_VALUE = 30 * SECONDS_IN_ONE_MINUTES;
+
         private readonly int duration;
 
-        public Duration(int durationInSeconds)
+        public Duration(int durationInSeconds = DEFAULT_VALUE)
         {
-            if (duration < 0) {
+            if (durationInSeconds <= 0) {
                 var error = String.Format("Duration must be positive (found {0})", durationInSeconds);
                 throw new ArgumentException(error);
             }
             this.duration = durationInSeconds;
         }
 
+        public bool IsDefault()
+        {
+            return duration == DEFAULT_VALUE;
+        }
+
+        public Duration Increment()
+        {
+            return new Duration(duration + INCREMENT);
+        }
+
+        public Duration Decrement()
+        {
+            return new Duration(duration - INCREMENT);
+        }
+
+        public Boolean IsLongerThan(Duration other)
+        {
+            return duration > other.duration;
+        }
+
+        public int inMinutes() {
+            return (int) Math.Round((double) duration / SECONDS_IN_ONE_MINUTES);
+        }
+
+        public int inSeconds()
+        {
+            return duration;
+        }
+
+        private const int INCREMENT = 5 * SECONDS_IN_ONE_MINUTES;
+        private const int SECONDS_IN_ONE_MINUTES = 60;
+
         public double normalize()
         {
             return ((double)duration) / MAXIMUM;
         }
+
+        private const int MAXIMUM = 90 * SECONDS_IN_ONE_MINUTES;
 
     }
 

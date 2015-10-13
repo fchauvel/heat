@@ -4,8 +4,36 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Heat;
 using Moq;
 
-namespace Sandbox
+namespace Tests
 {
+
+    [TestClass]
+    public class TestEngine
+    {
+        [TestMethod]
+        public void ShortenShouldUpdateThePresenter()
+        {
+            var presenter = new Mock<UserInterface>();
+            var engine = new Engine();
+            engine.SetUserInterface(presenter.Object);
+
+            engine.Shorten();
+
+            presenter.Verify(m => m.ShowDuration(It.Is<int>(value => value.Equals(25))), Times.Once());
+        }
+
+        [TestMethod]
+        public void ExtendShouldUpdateTheDuration()
+        {
+            var presenter = new Mock<UserInterface>();
+            var engine = new Engine();
+            engine.SetUserInterface(presenter.Object);
+
+            engine.Extend();
+
+            presenter.Verify(m => m.ShowDuration(It.Is<int>(value => value.Equals(35))), Times.Once());
+        }
+    }
 
     [TestClass]
     public class TestCoach
