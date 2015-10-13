@@ -20,8 +20,9 @@ namespace Tests
 
             listener.Verify(m => m.DurationChangedTo(It.Is<int>(duration => duration.Equals(30))), Times.Once());
             listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(Effort.DEFAULT))), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Once());
         }
-         
+
         [TestMethod]
         public void ShortenShouldUpdateTheDuration()
         {
@@ -32,43 +33,48 @@ namespace Tests
             engine.Shorten();
 
             listener.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(25))), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
         [TestMethod]
         public void ExtendShouldUpdateTheDuration()
         {
-            var presenter = new Mock<Listener>();
+            var listener = new Mock<Listener>();
             var engine = new Engine();
-            engine.RegisterListener(presenter.Object);
+            engine.RegisterListener(listener.Object);
 
             engine.Extend();
 
-            presenter.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(35))), Times.Once());
+            listener.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(35))), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
         [TestMethod]
         public void EasierShouldTriggerAnUpdateOfTheEffort()
         {
-            var presenter = new Mock<Listener>();
+            var listener = new Mock<Listener>();
             var engine = new Engine();
-            engine.RegisterListener(presenter.Object);
+            engine.RegisterListener(listener.Object);
 
             engine.ReduceEffort();
 
-            presenter.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(73))), Times.Once());
+            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(73))), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+
         }
 
 
         [TestMethod]
         public void HarderShouldTriggerAnUpdateOfTheEffort()
         {
-            var presenter = new Mock<Listener>();
+            var listener = new Mock<Listener>();
             var engine = new Engine();
-            engine.RegisterListener(presenter.Object);
+            engine.RegisterListener(listener.Object);
 
             engine.AugmentEffort();
 
-            presenter.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(77))), Times.Once());
+            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(77))), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
     }
 
@@ -167,28 +173,28 @@ namespace Tests
         public void TestTotalTime()
         {
             var level = new Level(1, breakTime: 0, switchTime: 0, exerciseTime: 30 );
-            Assert.AreEqual(level.TotalDuration(8), 240);
+            Assert.AreEqual(level.TotalDuration(8), Duration.fromSeconds(240));
         }
 
         [TestMethod]
         public void TestTotalTimeWithoutWorking()
         {
             var level = new Level(1, breakTime: 10, switchTime: 0, exerciseTime: 0);
-            Assert.AreEqual(level.TotalDuration(8), 0);
+            Assert.AreEqual(level.TotalDuration(8), Duration.fromSeconds(0));
         }
 
         [TestMethod]
         public void TestFullEffort()
         {
             var level = new Level(1, breakTime: 0, switchTime: 0, exerciseTime: 30);
-            Assert.AreEqual(level.Effort(8), 100.00, 1e-6);
+            Assert.AreEqual(level.Effort(8), new Effort(100));
         }
 
         [TestMethod]
         public void TestMediumEffort()
         {
             var level = new Level(2, breakTime: 20, switchTime: 0, exerciseTime: 10);
-            Assert.AreEqual(level.Effort(1), 50.00, 1e-3);
+            Assert.AreEqual(level.Effort(1), new Effort(50));
         }
 
 
@@ -196,20 +202,20 @@ namespace Tests
         public void TestNoEffort()
         {
             var level = new Level(1, breakTime: 10, switchTime: 0, exerciseTime: 0);
-            Assert.AreEqual(level.Effort(8), 0.00, 1e-3);
+            Assert.AreEqual(level.Effort(8), new Effort(0));
         }
 
         [TestMethod]
         public void TestLevelOptimization()
         {
-            const int expectedDuration = 30 * 60; // 30 minutes
-            const double effort = 95D;
+            var expectedDuration = Duration.fromMinutes(30);
+            var effort = new Effort(95);
             const int exerciseCount = 8;
 
             var level = Level.match(exerciseCount, expectedDuration, effort);
 
-            Assert.AreEqual(95D, level.Effort(exerciseCount), 1e-1);
-            Assert.IsTrue((30 * 60 - level.TotalDuration(exerciseCount)) / (30 * 60) < 0.1);
+            Assert.AreEqual(Effort.FromRatio(0.95), level.Effort(exerciseCount));
+            Assert.AreEqual(30, level.TotalDuration(exerciseCount).inMinutes());
         }
 
     }

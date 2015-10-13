@@ -10,7 +10,7 @@ namespace Heat
 
     public class Engine
     {
-        private Listener ui;
+        private Listener listener;
 
         private Circuit circuit;
         private Level level;
@@ -19,18 +19,19 @@ namespace Heat
 
         public Engine()
         {
-            this.ui = null;
+            this.listener = null;
             this.circuit = new Circuit(new string[] { "Burpees", "Push-ups" });
             this.level = new Level(2);
             this.duration = new Duration();
             this.effort = new Effort();
         }
 
-        public void RegisterListener(Listener ui)
+        public void RegisterListener(Listener listener)
         {
-            this.ui = ui;
-            this.ui.DurationChangedTo(duration.inMinutes());
-            this.ui.EffortChangedTo(effort.asPercentage());
+            this.listener = listener;
+            this.listener.DurationChangedTo(duration.inMinutes());
+            this.listener.EffortChangedTo(effort.AsPercentage());
+            UpdateLevel();
         }
 
         public void LoadCircuit(Circuit circuit)
@@ -38,74 +39,109 @@ namespace Heat
             this.circuit = circuit;
         }
 
-        public void OnGo()
+        public virtual void OnGo()
         {
-            level = Level.match(circuit.GetMoves().Length, duration.inSeconds(), effort.asPercentage());
-            new Thread(() => { 
-                var session = new Session(circuit, level);
-                session.Run(new TraineeAdapter(ui, level));
-            }).Start();
+            var session = new Session(circuit, level);
+            session.Run(new TraineeAdapter(listener, level));
         }
 
         public void AugmentEffort()
         {
-            effort = effort.NextIncrement();
-            ui.EffortChangedTo(effort.asPercentage());
+            effort = effort.NextLevel();
+            UpdateEffort();
+        }
+
+        private void UpdateEffort()
+        {
+            listener.EffortChangedTo(effort.AsPercentage());
+            UpdateLevel();
         }
 
         public void ReduceEffort()
         {
-            effort = effort.Decrement();
-            ui.EffortChangedTo(effort.asPercentage());
+            effort = effort.PreviousLevel();
+            UpdateEffort();
         }
 
         public void Shorten()
         {
             duration = this.duration.Decrement();
-            ui.DurationChangedTo(duration.inMinutes());
+            UpdateDuration();
+        }
+
+        private void UpdateDuration()
+        {
+            listener.DurationChangedTo(duration.inMinutes());
+            UpdateLevel();
         }
 
         public void Extend()
         {
             duration = this.duration.Increment();
-            ui.DurationChangedTo(duration.inMinutes());
+            UpdateDuration();
+
+        }
+
+        protected virtual void UpdateLevel()
+        {
+            level = Level.match(circuit.GetMoves().Length, duration, effort);
+            listener.LevelChangedTo(level.RoundCount(), level.BreakTime());
         }
 
     }
 
+    public class AsynchronousEngine : Engine
+    {
+
+        protected override void UpdateLevel()
+        {
+            new Thread(() =>
+            {
+                base.UpdateLevel();
+            }).Start();
+
+        }
+
+        public override void OnGo()
+        {
+            new Thread(() =>
+            {
+                base.OnGo();
+            }).Start();
+        }
+    }
+
     public class TraineeAdapter : Trainee
     {
-        private readonly Listener presenter;
+        private readonly Listener listener;
         private readonly Level level;
 
-        public TraineeAdapter(Listener presenter, Level level)
+        public TraineeAdapter(Listener listener, Level level)
         {
-            this.presenter = presenter;
+            this.listener = listener;
             this.level = level;
-
         }
 
         public void Break()
         {
-            presenter.ShowAction("BREAK");
+            listener.ShowAction("BREAK");
             level.TimeBreak(tickHandler);
         }
 
-
         private void tickHandler(int now)
         {
-            presenter.ShowTime(now);
+            listener.ShowTime(now);
         }
 
         public void Excercise(string move)
         {
-            presenter.ShowAction(move);
+            listener.ShowAction(move);
             level.TimeExercise(tickHandler);
         }
 
         public void SwitchTo()
         {
-            presenter.ShowAction("SWITCH");
+            listener.ShowAction("SWITCH");
             level.TimeSwitch(tickHandler);
         }
     }
@@ -122,15 +158,18 @@ namespace Heat
 
         void EffortChangedTo(int newEffort);
 
+        void LevelChangedTo(int roundCount, int breakDurationInSeconds);
+
     }
 
-    public class Level {
+    public class Level
+    {
 
 
-        public static Level match(int exerciseCount, int totalDuration, double effort)
+        public static Level match(int exerciseCount, Duration duration, Effort effort)
         {
             var bestFit = new Level(roundCount: 1, exerciseTime: 5, switchTime: 0, breakTime: 5);
-            var smallestError = error(bestFit, exerciseCount, totalDuration, effort);
+            var smallestError = error(bestFit, exerciseCount, duration, effort);
 
             for (int eachRoundCount = 1; eachRoundCount < 10; eachRoundCount++)
             {
@@ -139,8 +178,9 @@ namespace Heat
                     for (int eachBreakTime = 6; eachBreakTime < 30; eachBreakTime += 1)
                     {
                         var candidate = new Level(eachRoundCount, eachBreakTime, 0, eachExerciseTime);
-                        var candidateError = error(candidate, exerciseCount, totalDuration, effort);
-                        if (smallestError > candidateError) {
+                        var candidateError = error(candidate, exerciseCount, duration, effort);
+                        if (smallestError > candidateError)
+                        {
                             bestFit = candidate;
                             smallestError = candidateError;
                         }
@@ -151,24 +191,12 @@ namespace Heat
             return bestFit;
         }
 
-        public static double error(Level level, int exerciseCount, int desiredDuration, double desiredEffort)
+        public static double error(Level level, int exerciseCount, Duration desiredDuration, Effort desiredEffort)
         {
-            double error = Math.Pow(scaleEffort(desiredEffort) - scaleEffort(level.Effort(exerciseCount)), 2);
-            error += Math.Pow(scaleDuration(desiredDuration) - scaleDuration(level.TotalDuration(exerciseCount)), 2);
+            double error = Math.Pow(desiredEffort.Normalized() - level.Effort(exerciseCount).Normalized(), 2);
+            error += Math.Pow(desiredDuration.Normalized() - level.TotalDuration(exerciseCount).Normalized(), 2);
             return error;
         }
-
-        private static double scaleDuration(int duration)
-        {
-            return ((double)duration) / MAXIMUM_DURATION;
-        }
-
-        private static double scaleEffort(double effort)
-        {
-            return effort * 100D;
-        }
-
-        private static readonly double MAXIMUM_DURATION = 90 * 60;
 
 
         private readonly int roundCount;
@@ -184,17 +212,28 @@ namespace Heat
             this.exerciseDuration = exerciseTime;
         }
 
-        public int TotalDuration(int moveCount)
+        public Duration TotalDuration(int moveCount)
         {
-            return roundCount * ((exerciseDuration * moveCount) + (switchDuration * (moveCount - 1)))
+            var seconds = roundCount * ((exerciseDuration * moveCount) + (switchDuration * (moveCount - 1)))
                 + (breakDuration * (roundCount - 1));
+            return new Duration(seconds);
         }
 
-        public double Effort(int moveCount)
+        public Effort Effort(int moveCount)
         {
             double exerciseTime = roundCount * exerciseDuration * moveCount;
-            int totalDuration = TotalDuration(moveCount); 
-            return totalDuration == 0 ? 0D : 100D * exerciseTime / totalDuration;
+            Duration totalDuration = TotalDuration(moveCount);
+            return totalDuration.inSeconds() == 0 ? new Effort(0) : Heat.Effort.FromRatio(exerciseTime / totalDuration.inSeconds());
+        }
+
+        public int RoundCount()
+        {
+            return roundCount;
+        }
+
+        public int BreakTime()
+        {
+            return breakDuration;
         }
 
         public ICollection<int> rounds()
@@ -222,22 +261,23 @@ namespace Heat
             Timer timer = new Timer(duration, tickHandler);
             timer.DoWork();
         }
-        
+
     }
 
-    public class Circuit {
+    public class Circuit
+    {
 
         public static Circuit fromYAML(TextReader input)
         {
             var yaml = new YamlStream();
             yaml.Load(input);
-            var mapping = (YamlMappingNode) yaml.Documents[0].RootNode;
+            var mapping = (YamlMappingNode)yaml.Documents[0].RootNode;
 
             var exercises = new List<string>();
             var sequences = (YamlSequenceNode)mapping.Children[new YamlScalarNode("workout")];
             foreach (var eachExercise in sequences)
             {
-                 exercises.Add(((YamlScalarNode)eachExercise).Value);
+                exercises.Add(((YamlScalarNode)eachExercise).Value);
             }
 
             return new Circuit(exercises.ToArray());
@@ -268,15 +308,15 @@ namespace Heat
     {
         private Circuit circuit;
         private Level level;
-            
+
         public Session(Circuit circuit, Level level)
         {
             this.circuit = circuit;
-            this.level = level; 
+            this.level = level;
         }
 
         public void Run(Trainee trainee)
-        { 
+        {
             Cursor<int> rounds = new Cursor<int>(level.rounds());
             while (rounds.HasNext())
             {
@@ -285,7 +325,7 @@ namespace Heat
                 if (rounds.HasNext()) { trainee.Break(); }
             }
         }
-         
+
         private void GoThroughCircuit(Trainee trainee)
         {
             Cursor<string> move = new Cursor<string>(circuit.GetMoves());

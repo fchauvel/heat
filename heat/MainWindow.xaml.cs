@@ -56,6 +56,14 @@ namespace Heat
             }));
         }
 
+        public void LevelChangedTo(int roundCount, int breakTimeInSeconds)
+        {
+            rounds.Dispatcher.BeginInvoke((Action)(()=> {
+                var newRoundText = string.Format("{0} round(s) \u2014 {1} s. breaks", roundCount, breakTimeInSeconds);
+                rounds.Text = newRoundText;
+            }));
+        }
+
         private void Longer_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             engine.Extend();

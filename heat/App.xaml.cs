@@ -12,7 +12,7 @@ namespace Heat
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            engine = new Engine(); 
+            engine = new AsynchronousEngine(); 
             MainWindow presenter = new MainWindow(engine);
             engine.RegisterListener(presenter);
             presenter.Show();

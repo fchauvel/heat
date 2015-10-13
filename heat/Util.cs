@@ -7,6 +7,12 @@ namespace Heat
 
     public class Effort
     {
+        public static Effort FromRatio(double effort)
+        {
+            int rounded = (int)Math.Round(effort * 100);
+            return new Effort(rounded);
+        }
+
         public const int DEFAULT = 75;
 
         private readonly int effort;
@@ -21,6 +27,7 @@ namespace Heat
             if (percentage > 100)
             {
                 string error = string.Format("Effort must a value within [0, 100] (found {0})", percentage);
+                throw new ArgumentException(error);
             }
             effort = percentage;
         }
@@ -30,7 +37,7 @@ namespace Heat
             return effort == DEFAULT;
         }
 
-        public Effort NextIncrement()
+        public Effort NextLevel()
         {
             return new Effort(effort + INCREMENT);
         }
@@ -42,14 +49,31 @@ namespace Heat
             return effort > other.effort;
         }
 
-        public Effort Decrement()
+        public Effort PreviousLevel()
         {
             return new Effort(effort - INCREMENT);
         }
 
-        public int asPercentage()
+        public int AsPercentage()
         {
             return effort;
+        }
+
+        public double Normalized()
+        {
+            return (double)effort / 100;
+        }
+
+        public override bool Equals(Object otherObject)
+        {
+            if (!GetType().IsAssignableFrom(otherObject.GetType())) { return false; }
+            Effort other = (Effort)otherObject;
+            return effort == other.effort;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} %", effort);
         }
     }
 
@@ -71,7 +95,7 @@ namespace Heat
 
         public Duration(int durationInSeconds = DEFAULT)
         {
-            if (durationInSeconds <= 0) {
+            if (durationInSeconds < 0) {
                 var error = String.Format("Duration must be positive (found {0})", durationInSeconds);
                 throw new ArgumentException(error);
             }
@@ -110,12 +134,24 @@ namespace Heat
         private const int INCREMENT = 5 * SECONDS_IN_ONE_MINUTES;
         private const int SECONDS_IN_ONE_MINUTES = 60;
 
-        public double normalize()
+        public double Normalized()
         {
             return ((double)duration) / MAXIMUM;
         }
 
+        public override bool Equals(Object otherObject)
+        {
+            if (!GetType().IsAssignableFrom(otherObject.GetType())) { return false;  }
+            Duration other = (Duration)otherObject;
+            return other.duration == duration;
+        }
+
         private const int MAXIMUM = 90 * SECONDS_IN_ONE_MINUTES;
+
+        public override string ToString()
+        {
+            return String.Format("{0} s.", duration);
+        }
 
     }
 

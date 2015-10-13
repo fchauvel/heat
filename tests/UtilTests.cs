@@ -26,14 +26,14 @@ namespace Heat
         [ExpectedException(typeof(ArgumentException))]
         public void ShouldRejectValueAbove100()
         {
-            var effort = new Effort(140);
+            var effort = new Effort(140); 
         }
 
         [TestMethod]
         public void ShouldBeIncrementable()
         {
             var effort = new Effort(75);
-            var newEffort = effort.NextIncrement();
+            var newEffort = effort.NextLevel();
             Assert.IsTrue(newEffort.IsHarderThan(effort));
         }
 
@@ -41,7 +41,7 @@ namespace Heat
         public void ShouldBeDecrementable()
         {
             var effort = new Effort(75);
-            var newEffort = effort.Decrement();
+            var newEffort = effort.PreviousLevel();
             Assert.IsTrue(effort.IsHarderThan(newEffort));
         }
 
@@ -50,7 +50,33 @@ namespace Heat
         {
             const int PERCENTAGE = 75;
             var effort = new Effort(PERCENTAGE);
-            Assert.AreEqual(PERCENTAGE, effort.asPercentage());
+            Assert.AreEqual(PERCENTAGE, effort.AsPercentage());
+        }
+
+        [TestMethod]
+        public void NormalizedValueShouldBeAvailable()
+        {
+            var effort = new Effort(75);
+            Assert.AreEqual(0.75D, effort.Normalized());
+        }
+
+        [TestMethod]
+        public void ShouldBeComparable()
+        {
+            var effort1 = new Effort(50);
+            var effort2 = new Effort(51);
+            var effort3 = new Effort(50);
+
+            Assert.AreEqual(effort1, effort1);
+            Assert.AreEqual(effort1, effort3);
+            Assert.AreNotEqual(effort1, effort2);
+        }
+
+        [TestMethod]
+        public void ShouldBeAvailableFromADecimalValue()
+        {
+            var effort = Effort.FromRatio(0.75);  
+            Assert.AreEqual(75, effort.AsPercentage()); 
         }
 
     }

@@ -75,7 +75,7 @@
         </StackPanel>
 
         <StackPanel x:Name="frame" Orientation="Vertical" HorizontalAlignment="Center" Height="260" Grid.Row="2" Grid.ColumnSpan="2">
-            <TextBlock x:Name="round" FontSize="29.333" TextAlignment="Center">--</TextBlock>
+            <TextBlock x:Name="rounds" FontSize="21.333" TextAlignment="Center">X round(s) &#x2014; 25 s. breaks</TextBlock>
             <TextBlock x:Name="action" FontSize="48" Width="400" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold">READY?</TextBlock>
             <TextBlock x:Name="clock" FontSize="29.333" TextAlignment="Center">--</TextBlock>
         </StackPanel>
