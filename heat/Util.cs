@@ -42,7 +42,7 @@ namespace Heat
             return new Effort(effort + INCREMENT);
         }
 
-        private const int INCREMENT = 2;
+        private const int INCREMENT = 1;
 
         public bool IsHarderThan(Effort other)
         {

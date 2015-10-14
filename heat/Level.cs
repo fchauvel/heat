@@ -203,6 +203,11 @@ namespace Heat
             return workoutPhase.RoundCount;
         }
 
+        public int ExerciseTime()
+        {
+            return workoutPhase.ExerciseDuration;
+        }
+
         public int BreakTime()
         {
             return workoutPhase.BreakDuration;

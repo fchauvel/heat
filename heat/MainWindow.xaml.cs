@@ -55,10 +55,10 @@ namespace Heat
             }));
         }
 
-        public void LevelChangedTo(int roundCount, int breakTimeInSeconds)
+        public void LevelChangedTo(int roundCount, int exerciseTime, int breakTimeInSeconds)
         {
             rounds.Dispatcher.BeginInvoke((Action)(()=> {
-                var newRoundText = string.Format("{0} round(s) \u2014 {1} s. breaks", roundCount, breakTimeInSeconds);
+                var newRoundText = string.Format("{0} rounds ; {1} s. exercises ; {2} s. breaks", roundCount, exerciseTime, breakTimeInSeconds);
                 rounds.Text = newRoundText;
             }));
         }

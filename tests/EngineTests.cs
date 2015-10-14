@@ -20,7 +20,7 @@ namespace Tests
 
             listener.Verify(m => m.DurationChangedTo(It.Is<int>(duration => duration.Equals(30))), Times.Once());
             listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(Effort.DEFAULT))), Times.Once());
-            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Once());
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace Tests
             engine.Shorten();
 
             listener.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(25))), Times.Once());
-            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace Tests
             engine.Extend();
 
             listener.Verify(m => m.DurationChangedTo(It.Is<int>(value => value.Equals(35))), Times.Once());
-            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace Tests
             engine.ReduceEffort();
 
             listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(73))), Times.Once());
-            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
 
@@ -73,7 +73,7 @@ namespace Tests
             engine.AugmentEffort();
 
             listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(77))), Times.Once());
-            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
     }
 

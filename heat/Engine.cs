@@ -69,7 +69,7 @@ namespace Heat
             listener.DurationChangedTo(scheduler.Duration.inMinutes());
             listener.EffortChangedTo(scheduler.Effort.AsPercentage());
             var schedule = scheduler.Schedule;
-            listener.LevelChangedTo(schedule.RoundCount(), schedule.BreakTime());
+            listener.LevelChangedTo(schedule.RoundCount(), schedule.ExerciseTime(), schedule.BreakTime());
         }
 
     }
@@ -165,7 +165,7 @@ namespace Heat
 
         void EffortChangedTo(int newEffort);
 
-        void LevelChangedTo(int roundCount, int breakDurationInSeconds);
+        void LevelChangedTo(int roundCount, int exerciseTime, int breakDurationInSeconds);
 
     }
 
