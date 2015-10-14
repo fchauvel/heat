@@ -60,7 +60,6 @@ namespace Tests
 
             listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(73))), Times.Once());
             listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
-
         }
 
 
@@ -92,7 +91,7 @@ namespace Tests
             var trainee = new TraineeAdapter(uiMock.Object, level);
             trainee.Break();
 
-            uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals("BREAK"))), Times.Once());
+            uiMock.Verify(m => m.ShowAction(It.IsAny<string>()), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(BREAK_DURATION));            
         }
 
@@ -109,22 +108,6 @@ namespace Tests
             trainee.Excercise(BURPEES);
 
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(BURPEES))), Times.Once());
-            uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
-        }
-
-
-        [TestMethod]
-        public void TestSwitch()
-        {
-            const string TEXT = "SWITCH";
-            const int DURATION = 5;
-
-            var uiMock = new Mock<Listener>();
-            var level = new Level(2, switchTime: DURATION);
-            var trainee = new TraineeAdapter(uiMock.Object, level);
-            trainee.SwitchTo();
-
-            uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(TEXT))), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
         }
 

@@ -71,6 +71,11 @@ namespace Heat
             return effort == other.effort;
         }
 
+        public override int GetHashCode()
+        {
+            return effort.GetHashCode();
+        }
+
         public override string ToString()
         {
             return String.Format("{0} %", effort);
@@ -146,11 +151,26 @@ namespace Heat
             return other.duration == duration;
         }
 
+        public override int GetHashCode()
+        {
+            return duration.GetHashCode();
+        }
+
         private const int MAXIMUM = 90 * SECONDS_IN_ONE_MINUTES;
 
         public override string ToString()
         {
             return String.Format("{0} s.", duration);
+        }
+
+        public static Duration operator+(Duration left, Duration right)
+        {
+            return new Duration(left.duration + right.duration);
+        }
+
+        public static Effort operator/(Duration left, Duration right)
+        {
+            return Heat.Effort.FromRatio((double)left.duration / right.duration);
         }
 
     }

@@ -52,6 +52,21 @@ namespace Tests
             Assert.AreEqual(NAME, circuit.Name); 
         }
 
+        [TestMethod]
+        public void ShouldExposeTheExistenceOfWarmup()
+        {
+            var circuit1 = new Circuit("name", new List<string>(), new List<string>(), new List<string>());
+            Assert.IsFalse(circuit1.HasWarmup);
+        }
+
+        [TestMethod]
+        public void ShouldExposeTheExistenceOfWorkout()
+        {
+            var circuit = new Circuit("name", new List<string>(), new List<string>(), new List<string>());
+            Assert.IsFalse(circuit.HasWarmup);
+        }
+
+
 
     }
 }

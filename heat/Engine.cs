@@ -10,80 +10,66 @@ namespace Heat
     public class Engine
     {
         private Listener listener;
-        private Circuit circuit;
-        private Level level;
-        private Duration duration;
-        private Effort effort;
+        private Scheduler scheduler;
 
         public Engine()
         {
             this.listener = null;
-            this.circuit = Circuit.SimpleWorkout("Burpees", "Push-ups", "Squats");
-            this.level = new Level(2);
-            this.duration = new Duration();
-            this.effort = new Effort();
+            this.scheduler 
+                = new Scheduler(
+                    Circuit.SimpleWorkout("Burpees", "Push-ups", "Squats"),
+                    new Duration(),
+                    new Effort()
+                );
         }
 
         public void RegisterListener(Listener listener)
         {
             this.listener = listener;
-            this.listener.DurationChangedTo(duration.inMinutes());
-            this.listener.EffortChangedTo(effort.AsPercentage());
             UpdateLevel();
         }
 
         public void LoadCircuit(Circuit circuit)
         {
-            this.circuit = circuit;
+            scheduler.Circuit = circuit;
         }
 
         public virtual void OnGo()
         {
-            var session = new Session(circuit, level);
-            session.Run(new TraineeAdapter(listener, level));
+            var session = new Session(scheduler.Circuit, scheduler.Schedule);
+            session.Run(new TraineeAdapter(listener, scheduler.Schedule));
         }
 
         public void AugmentEffort()
         {
-            effort = effort.NextLevel();
-            UpdateEffort();
-        }
-
-        private void UpdateEffort()
-        {
-            listener.EffortChangedTo(effort.AsPercentage());
+            scheduler.Harder();
             UpdateLevel();
         }
 
         public void ReduceEffort()
         {
-            effort = effort.PreviousLevel();
-            UpdateEffort();
+            scheduler.Easier();
+            UpdateLevel();
         }
 
         public void Shorten()
         {
-            duration = this.duration.Decrement();
-            UpdateDuration();
-        }
-
-        private void UpdateDuration()
-        {
-            listener.DurationChangedTo(duration.inMinutes());
+            scheduler.Shorten();
             UpdateLevel();
         }
 
         public void Extend()
         {
-            duration = this.duration.Increment();
-            UpdateDuration();
-
+            scheduler.Extend();
+            UpdateLevel();
         }
 
         protected virtual void UpdateLevel()
         {
-            level = Level.match(circuit, duration, effort);
-            listener.LevelChangedTo(level.RoundCount(), level.BreakTime());
+            listener.DurationChangedTo(scheduler.Duration.inMinutes());
+            listener.EffortChangedTo(scheduler.Effort.AsPercentage());
+            var schedule = scheduler.Schedule;
+            listener.LevelChangedTo(schedule.RoundCount(), schedule.BreakTime());
         }
 
     }

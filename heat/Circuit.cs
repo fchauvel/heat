@@ -95,6 +95,11 @@ namespace Heat
             get { return warmup; }
         }
 
+        public bool HasWarmup
+        {
+            get { return warmup.Count > 0; }
+        }
+
         public List<string> Workout
         {
             get { return workout; }
