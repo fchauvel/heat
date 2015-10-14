@@ -82,7 +82,7 @@ namespace Heat
 
         protected virtual void UpdateLevel()
         {
-            level = Level.match(circuit.Workout.Count, duration, effort);
+            level = Level.match(circuit, duration, effort);
             listener.LevelChangedTo(level.RoundCount(), level.BreakTime());
         }
 
@@ -157,13 +157,13 @@ namespace Heat
 
         public override void SwitchTo()
         {
-            listener.ShowAction("SWITCH");
-            level.TimeSwitch(tickHandler);
+            // listener.ShowAction("SWITCH");
+            // level.TimeSwitch(tickHandler);
         }
 
         public override void CircuitCompleted()
         {
-
+            listener.ShowAction("Well Done!");
         }
     }
 

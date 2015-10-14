@@ -6,19 +6,19 @@ namespace Heat
 {
     public class Level
     {
-        public static Level match(int exerciseCount, Duration duration, Effort effort)
+        public static Level match(Circuit circuit, Duration duration, Effort effort)
         {
             var bestFit = new Level(roundCount: 1, exerciseTime: 5, switchTime: 0, breakTime: 5);
-            var smallestError = error(bestFit, exerciseCount, duration, effort);
+            var smallestError = error(bestFit, circuit, duration, effort);
 
-            for (int eachRoundCount = 1; eachRoundCount < 10; eachRoundCount++)
+            for (int eachRoundCount = 1; eachRoundCount < 20; eachRoundCount++)
             {
                 for (int eachExerciseTime = 15; eachExerciseTime < 90; eachExerciseTime += 1)
                 {
                     for (int eachBreakTime = 6; eachBreakTime < 30; eachBreakTime += 1)
                     {
                         var candidate = new Level(eachRoundCount, eachBreakTime, 0, eachExerciseTime);
-                        var candidateError = error(candidate, exerciseCount, duration, effort);
+                        var candidateError = error(candidate, circuit, duration, effort);
                         if (smallestError > candidateError)
                         {
                             bestFit = candidate;
@@ -31,10 +31,10 @@ namespace Heat
             return bestFit;
         }
 
-        public static double error(Level level, int exerciseCount, Duration desiredDuration, Effort desiredEffort)
+        public static double error(Level level, Circuit circuit, Duration desiredDuration, Effort desiredEffort)
         {
-            double error = Math.Pow(desiredEffort.Normalized() - level.Effort(exerciseCount).Normalized(), 2);
-            error += Math.Pow(desiredDuration.Normalized() - level.TotalDuration(exerciseCount).Normalized(), 2);
+            double error = Math.Pow(desiredEffort.Normalized() - level.Effort(circuit).Normalized(), 2);
+            error += Math.Pow(desiredDuration.Normalized() - level.TotalDuration(circuit).Normalized(), 2);
             return error;
         }
 
@@ -52,18 +52,33 @@ namespace Heat
             this.exerciseDuration = exerciseTime;
         }
 
-        public Duration TotalDuration(int moveCount)
+        public Duration TotalDuration(Circuit circuit)
         {
-            var seconds = roundCount * ((exerciseDuration * moveCount) + (switchDuration * (moveCount - 1)))
-                + (breakDuration * (roundCount - 1));
-            return new Duration(seconds);
+            var effort = EffortDuration(circuit);
+            var breaks = BreakDuration();
+            return new Duration(effort + breaks);
         }
 
-        public Effort Effort(int moveCount)
+        private int BreakDuration()
         {
-            double exerciseTime = roundCount * exerciseDuration * moveCount;
-            Duration totalDuration = TotalDuration(moveCount);
-            return totalDuration.inSeconds() == 0 ? new Effort(0) : Heat.Effort.FromRatio(exerciseTime / totalDuration.inSeconds());
+            return 5 + 5 + roundCount * breakDuration;
+        }
+
+        private int EffortDuration(Circuit circuit)
+        {
+            return exerciseDuration * circuit.Warmup.Count
+                + roundCount * exerciseDuration * circuit.Workout.Count
+                + exerciseDuration * circuit.Stretching.Count;
+        }
+
+        public Effort Effort(Circuit circuit)
+        {
+            var totalDuration = TotalDuration(circuit);
+            if (totalDuration.inSeconds() == 0)
+            {
+                return new Effort(0);
+            }
+            return Heat.Effort.FromRatio((double)EffortDuration(circuit) / totalDuration.inSeconds());
         }
 
         public int RoundCount()
@@ -85,7 +100,6 @@ namespace Heat
         {
             Countdown(5, tickHandler);
         }
-
         public void TimeToWorkout(Timer.TickHandler tickHandler)
         {
             Countdown(breakDuration, tickHandler);

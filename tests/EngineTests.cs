@@ -128,55 +128,7 @@ namespace Tests
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
         }
 
-        [TestMethod]
-        public void TestTotalTime()
-        {
-            var level = new Level(1, breakTime: 0, switchTime: 0, exerciseTime: 30 );
-            Assert.AreEqual(level.TotalDuration(8), Duration.fromSeconds(240));
-        }
-
-        [TestMethod]
-        public void TestTotalTimeWithoutWorking()
-        {
-            var level = new Level(1, breakTime: 10, switchTime: 0, exerciseTime: 0);
-            Assert.AreEqual(level.TotalDuration(8), Duration.fromSeconds(0));
-        }
-
-        [TestMethod]
-        public void TestFullEffort()
-        {
-            var level = new Level(1, breakTime: 0, switchTime: 0, exerciseTime: 30);
-            Assert.AreEqual(level.Effort(8), new Effort(100));
-        }
-
-        [TestMethod]
-        public void TestMediumEffort()
-        {
-            var level = new Level(2, breakTime: 20, switchTime: 0, exerciseTime: 10);
-            Assert.AreEqual(level.Effort(1), new Effort(50));
-        }
-
-
-        [TestMethod]
-        public void TestNoEffort()
-        {
-            var level = new Level(1, breakTime: 10, switchTime: 0, exerciseTime: 0);
-            Assert.AreEqual(level.Effort(8), new Effort(0));
-        }
-
-        [TestMethod]
-        public void TestLevelOptimization()
-        {
-            var expectedDuration = Duration.fromMinutes(30);
-            var effort = new Effort(95);
-            const int exerciseCount = 8;
-
-            var level = Level.match(exerciseCount, expectedDuration, effort);
-
-            Assert.AreEqual(Effort.FromRatio(0.95), level.Effort(exerciseCount));
-            Assert.AreEqual(30, level.TotalDuration(exerciseCount).inMinutes());
-        }
-
+        
     }
 
 

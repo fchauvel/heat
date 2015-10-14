@@ -15,6 +15,16 @@ namespace Tests
         [TestMethod]
         public void CircuitShouldIncludeWorkout()
         {
+            Circuit circuit = PrepareCircuit();
+
+            Assert.AreEqual(circuit.Name, "Sample Circuit");
+            CollectionAssert.AreEqual(circuit.Warmup, new List<string>() { "Jumping Jacks", "Running in place" });
+            CollectionAssert.AreEqual(circuit.Workout, new List<string>() { "Pushups", "Burpees", "Standing Crunches" });
+            CollectionAssert.AreEqual(circuit.Stretching, new List<string>() { "Standing Quadriceps Stretch", "Standing Hamstring Stretch" });
+        }
+
+        private static Circuit PrepareCircuit()
+        {
             const string yamlSnippet = @"
                 name: Sample Circuit
                 warmup:
@@ -30,11 +40,7 @@ namespace Tests
                 ";
 
             var circuit = Circuit.fromYAML(new StringReader(yamlSnippet));
-
-            Assert.AreEqual(circuit.Name, "Sample Circuit");
-            CollectionAssert.AreEqual(circuit.Warmup, new List<string>() { "Jumping Jacks", "Running in place" });
-            CollectionAssert.AreEqual(circuit.Workout, new List<string>() { "Pushups", "Burpees", "Standing Crunches" });
-            CollectionAssert.AreEqual(circuit.Stretching, new List<string>() { "Standing Quadriceps Stretch", "Standing Hamstring Stretch" });
+            return circuit;
         }
 
         [TestMethod]
@@ -45,5 +51,7 @@ namespace Tests
 
             Assert.AreEqual(NAME, circuit.Name); 
         }
+
+
     }
 }

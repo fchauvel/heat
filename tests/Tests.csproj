@@ -73,6 +73,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CircuitTests.cs" />
+    <Compile Include="LevelTests.cs" />
     <Compile Include="SessionTests.cs" />
     <Compile Include="EngineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

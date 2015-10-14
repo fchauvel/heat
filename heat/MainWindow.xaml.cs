@@ -27,7 +27,7 @@ namespace Heat
                {
                    this.action.Text = text;
                    PromptBuilder pb = new PromptBuilder();
-                   pb.AppendText("Now, " + text + "!");
+                   pb.AppendText(text + "!");
                    synthesizer.Speak(pb);
                }
             ));
