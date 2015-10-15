@@ -62,6 +62,20 @@ namespace Tests
             listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
+        [TestMethod]
+        public void LoadCircuitShouldUpdateNameAndLevel()
+        {
+            var circuit = Circuit.NamedWorkout("circuit", new List<string> { "move1", "move2" });
+            var listener = new Mock<Listener>();
+            var engine = new Engine();
+            engine.RegisterListener(listener.Object);
+
+            engine.LoadCircuit(circuit);
+
+            listener.Verify(mock => mock.CircuitChangedTo(It.Is<String>(name => name.Equals("circuit"))), Times.Once());
+            listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+        }
+
 
         [TestMethod]
         public void HarderShouldTriggerAnUpdateOfTheEffort()
@@ -75,7 +89,11 @@ namespace Tests
             listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(77))), Times.Once());
             listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
+
+
     }
+
+
 
     [TestClass]
     public class TestCoach
@@ -110,6 +128,7 @@ namespace Tests
             uiMock.Verify(m => m.ShowAction(It.Is<string>(text => text.Equals(BURPEES))), Times.Once());
             uiMock.Verify(m => m.ShowTime(It.IsAny<int>()), Times.Exactly(DURATION));
         }
+       
 
         
     }

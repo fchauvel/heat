@@ -6,8 +6,20 @@
         xmlns:local="clr-namespace:Heat"
         mc:Ignorable="d"
         Title="Heat --- Interval Training" Height="400" Width="500" >
-
-    <Grid VerticalAlignment="Top">
+    <Window.Resources>
+        <Style x:Key="TextBlockMouseOverStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Green" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid VerticalAlignment="Top" Opacity="0.9">
+        <Grid.Background>
+            <ImageBrush ImageSource="Resources/Clear-waters-in-the-national-park.jpg">
+            </ImageBrush>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
             <RowDefinition Height="25"/>
@@ -15,93 +27,112 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="2" >
-            <Image x:Name="image" Height="50" Source="Resources/Logo_100.png" Margin="5px, 0, 0,0"/>
-        </StackPanel>
+        <Rectangle Fill="#CCFF0000"/>
 
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Fill="Black" Stroke="Black" Grid.RowSpan="1"/>
+        <Rectangle Height="24" Grid.Row="2" VerticalAlignment="Top" Fill="#AAFFFFFF"/>
 
-        <Rectangle Grid.Row="3" Grid.ColumnSpan="2" Fill="Black" Stroke="Black" Grid.RowSpan="1"/>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="2" />
+
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="1">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.016,-1.013" StartPoint="0.015,1.358">
+                    <GradientStop Color="White" Offset="0.803"/>
+                    <GradientStop Color="#CCFF0000" Offset="0.332"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Rectangle Grid.Row="3" Grid.ColumnSpan="2" Stroke="Black" Grid.RowSpan="1">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.041,-0.361" StartPoint="0.041,0.831">
+                    <GradientStop Color="White" Offset="0.803"/>
+                    <GradientStop Color="#CCFF0000" Offset="0.332"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
 
         <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Grid.RowSpan="1" VerticalAlignment="Center" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" TextAlignment="Center" Foreground="White" VerticalAlignment="Center" Margin="20,0,0,0">&#x23F0;</TextBlock>
-                <Button x:Name="Shorter" Click="Shorter_Click">
+                <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" TextAlignment="Center" Foreground="White" VerticalAlignment="Center" Margin="20,0,0,0"><Run Text="⏰"/></TextBlock>
+                <Button x:Name="Shorter" Click="Shorter_Click" ToolTip="Shorter">
                     <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Margin="0" Foreground="White">&#xE00E;</TextBlock>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Margin="0" Foreground="White"><Run Text="&#xE00E;"/></TextBlock>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBlock x:Name="duration" Text="100 min." FontSize="16" Width="70" HorizontalAlignment="Center" TextAlignment="Center" Foreground="White"></TextBlock>
-                <Button x:Name="Longer" Click="Longer_Click">
+                <TextBlock x:Name="duration" Text="100 min." FontSize="16" Width="70" HorizontalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                <Button x:Name="Longer" Click="Longer_Click" ToolTip="Longer">
                     <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Foreground="White">&#xE00F;</TextBlock>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" Foreground="White" Margin="20,0,0,0">&#x1f4aa;</TextBlock>
-                <Button x:Name="Easier" Click="Easier_Click">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Foreground="White">&#xE00E;</TextBlock>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-                <TextBlock x:Name="effort" Text="100 %" FontSize="16" Width="50" TextAlignment="Center" Foreground="White"></TextBlock>
-                <Button x:Name="Harder" Click="Harder_Click">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Foreground="White">&#xE00F;</TextBlock>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Foreground="White"><Run Text="&#xE00F;"/></TextBlock>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" Foreground="White" Margin="15,0,0,0">&#x1F4D1;</TextBlock>
-                <TextBlock x:Name="Workout" Text="Sample Workout" FontSize="16" Margin="5,0,10,0" Foreground="White"></TextBlock>
-                <Button x:Name="ChangeWorkout" Click="ChangeWorkout_Click">
+                <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" Foreground="White" Margin="20,0,0,0"><Run Text="💪"/></TextBlock>
+                <Button x:Name="Easier" Click="Easier_Click" ToolTip="Easier">
                     <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock FontSize="16" Margin="5,0,0,0" Foreground="White">&#x1f4c2;</TextBlock>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Foreground="White"><Run Text="&#xE00E;"/></TextBlock>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                
+                <TextBlock x:Name="effort" Text="100 %" FontSize="16" Width="50" TextAlignment="Center" Foreground="White"/>
+                <Button x:Name="Harder" Click="Harder_Click" ToolTip="Harder">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Foreground="White"><Run Text="&#xE00F;"/></TextBlock>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontFamily="Segoe UI Symbol" FontSize="16" Width="20" Foreground="White" Margin="15,0,0,0"><Run Text="📑"/></TextBlock>
+                <TextBlock x:Name="Workout" Text="Sample Workout" FontSize="16" Margin="5,0,10,0" Foreground="White"/>
+                <Button x:Name="ChangeWorkout" Click="ChangeWorkout_Click" ToolTip="Choose your workout" Margin="0,0,10,0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <TextBlock FontSize="16" Margin="5,0,0,0" Style="{StaticResource TextBlockMouseOverStyle}" Foreground="White">
+                                <Run Text="📂"/>
+                            </TextBlock>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </StackPanel>
         </StackPanel>
 
         <StackPanel x:Name="frame" Orientation="Vertical" HorizontalAlignment="Center" Height="260" Grid.Row="2" Grid.ColumnSpan="2">
-            <TextBlock x:Name="rounds" FontSize="16" TextAlignment="Center">X round(s) ; 10 s. exercises ; 25 s. breaks</TextBlock>
-            <TextBlock x:Name="action" FontSize="48" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Height="119">READY?</TextBlock>
-            <TextBlock x:Name="clock" FontSize="29.333" TextAlignment="Center">--</TextBlock>
+            <TextBlock x:Name="rounds" FontSize="16" TextAlignment="Center" FontWeight="Bold"><Run Text="X round(s) ; 10 s. exercises ; 25 s. breaks"/></TextBlock>
+            <TextBlock x:Name="action" FontSize="48" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Height="119"><Run Text="READY?"/></TextBlock>
+            <TextBlock x:Name="clock" FontSize="29.333" TextAlignment="Center"><Run Text="--"/></TextBlock>
         </StackPanel>
 
         <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button x:Name="Reset" Width="60">
                 <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <TextBlock  FontFamily="Segoe UI Symbol" FontSize="28" Foreground="White" TextAlignment="Center">&#x23EA;</TextBlock>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <TextBlock  FontFamily="Segoe UI Symbol" FontSize="28" Foreground="White" TextAlignment="Center"><Run Text="⏪"/></TextBlock>
                     </ControlTemplate>
                 </Button.Template>
             </Button>
             <Button x:Name="Go" Width="60" Click="Go_Click">
                 <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <TextBlock  FontFamily="Segoe UI Symbol" FontSize="28" Foreground="White" TextAlignment="Center">&#x25B6;</TextBlock>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <TextBlock  FontFamily="Segoe UI Symbol" FontSize="28" Foreground="White" TextAlignment="Center"><Run Text="▶"/></TextBlock>
                     </ControlTemplate>
                 </Button.Template>
             </Button>
             <Button x:Name="Cancel" Width="60">
                 <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <TextBlock  FontFamily="Segoe UI Symbol" FontSize="28" Foreground="White" TextAlignment="Center">&#x2B1B;</TextBlock>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <TextBlock  FontFamily="Segoe UI Symbol" FontSize="28" Foreground="White" TextAlignment="Center"><Run Text="⬛"/></TextBlock>
                     </ControlTemplate>
                 </Button.Template>
             </Button>
         </StackPanel>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,0,0,20" TextWrapping="Wrap" Text="HEAT" Width="158.6" FontSize="32" FontWeight="Bold"/>
+        <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="10,0,0,-1.86" TextWrapping="Wrap" Width="133.667" Height="28.8" VerticalAlignment="Bottom" FontSize="13.333" FontStyle="Italic"><Run Text=" "/><Run Text="Interval Training"/></TextBlock>
     </Grid>
 </Window>

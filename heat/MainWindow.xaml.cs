@@ -63,6 +63,14 @@ namespace Heat
             }));
         }
 
+        public void CircuitChangedTo(string circuitName)
+        {
+            Workout.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                Workout.Text = circuitName;
+            }));
+        }
+
         private void Longer_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             engine.Extend();

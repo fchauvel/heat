@@ -32,6 +32,8 @@ namespace Heat
         public void LoadCircuit(Circuit circuit)
         {
             scheduler.Circuit = circuit;
+            listener.CircuitChangedTo(circuit.Name);
+            UpdateLevel();
         }
 
         public virtual void OnGo()
@@ -166,6 +168,8 @@ namespace Heat
         void EffortChangedTo(int newEffort);
 
         void LevelChangedTo(int roundCount, int exerciseTime, int breakDurationInSeconds);
+
+        void CircuitChangedTo(string circuitName);
 
     }
 

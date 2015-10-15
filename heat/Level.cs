@@ -50,11 +50,11 @@ namespace Heat
 
         private void BuildCandidates()
         {
-            for (int eachRoundCount = 1; eachRoundCount < 20; eachRoundCount++)
+            for (int eachRoundCount = 2; eachRoundCount < 10; eachRoundCount++)
             {
                 for (int eachExerciseTime = 15; eachExerciseTime < 90; eachExerciseTime += 1)
                 {
-                    for (int eachBreakTime = 6; eachBreakTime < 30; eachBreakTime += 1)
+                    for (int eachBreakTime = 0; eachBreakTime < 60; eachBreakTime += 1)
                     {
                         candidateLevels.Add(new Level(eachRoundCount, eachBreakTime, 0, eachExerciseTime));
                     }
@@ -84,16 +84,21 @@ namespace Heat
 
         private void AdjustSchedule()
         {
+            var selection = new List<Level>() { candidateLevels[0] };
             var smallestError = Evaluate(candidateLevels[0]);
             foreach (var candidate in candidateLevels)
             {
                 var error = Evaluate(candidate);
                 if (error < smallestError)
                 {
+                    selection.Clear();
+                    selection.Add(candidate);
                     smallestError = error;
-                    schedule = candidate;
+                } else if (error == smallestError) {
+                    selection.Add(candidate);
                 }
             }
+            schedule = selection.Find(level => level.RoundCount() == selection.Min(p => p.RoundCount()));
         }
 
         private double Evaluate(Level level)

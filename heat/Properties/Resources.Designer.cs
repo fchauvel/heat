@@ -63,6 +63,16 @@ namespace heat.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Clear_waters_in_the_national_park {
+            get {
+                object obj = ResourceManager.GetObject("Clear_waters_in_the_national_park", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Logo_100 {
             get {
                 object obj = ResourceManager.GetObject("Logo_100", resourceCulture);

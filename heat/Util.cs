@@ -29,7 +29,7 @@ namespace Heat
                 string error = string.Format("Effort must a value within [0, 100] (found {0})", percentage);
                 throw new ArgumentException(error);
             }
-            effort = percentage;
+            effort = percentage ;
         }
 
         public bool IsDefault()
