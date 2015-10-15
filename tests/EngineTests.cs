@@ -58,7 +58,7 @@ namespace Tests
 
             engine.ReduceEffort();
 
-            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(73))), Times.Once());
+            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(74))), Times.Once());
             listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
@@ -86,7 +86,7 @@ namespace Tests
 
             engine.AugmentEffort();
 
-            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(77))), Times.Once());
+            listener.Verify(mock => mock.EffortChangedTo(It.Is<int>(effort => effort.Equals(76))), Times.Once());
             listener.Verify(mock => mock.LevelChangedTo(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
         }
 
